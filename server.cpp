@@ -12,8 +12,8 @@ using namespace std;
 int main(int argc, char **argv){
     //Check to make sure there are enough arguments
     if (argc < 2){
-        cout << "Incorrect input format" << endl;
-        cout << "Correct input: " << argv[0] << " <port number>" << endl;
+        cout << "Incorrect input format!" << endl;
+        cout << "Correct input: <executable file name> <port number>" << endl;
         return 0;
     }
     //take the second element of arg vector. First element is name of executable
@@ -37,7 +37,7 @@ int main(int argc, char **argv){
     //3. Listen
     int listen_value = listen(sock, 1);
     if (listen_value == -1){
-        cerr << "Could not listen!";
+        cerr << "Error! Could not listen.";
         return -2;
     }
 
@@ -45,10 +45,10 @@ int main(int argc, char **argv){
     struct sockaddr_in remote_address;
     memset(&remote_address, 0, sizeof(remote_address));
     socklen_t remote_addrlen = sizeof(address);
-    cout << "Waiting for new connection..." << endl;
+    cout << "Waiting for new connection... " << endl;
     int client_socket = accept(sock, (struct sockaddr*)&remote_address, &remote_addrlen);
     if (client_socket == -1){
-        cout << "Could not accept!";
+        cout << "Error! Could not accept!";
         return -3;
     }
 
@@ -56,23 +56,22 @@ int main(int argc, char **argv){
     int remote_port = ntohs(remote_address.sin_port);
     cout << "Accepted new client at " << client_ip << ":" << remote_port << endl;
 
-    int buf_len = 1024;
-    char buffer[buf_len];
+    int msg_buf = 1024;
+    char message[msg_buf];
 
     while(1){
-        //Clear out buffer before you receive
-        memset(buffer, 0, buf_len);
+        //Clear out previous message before you receive
+        memset(message, 0, msg_buf);
         //5. Receive from the client
-        int bytes_received = recv(client_socket, buffer, buf_len-1, 0);
+        int bytes_received = recv(client_socket, message, msg_buf-1, 0);
         if (bytes_received == -1){
-            cout << "Could not receive!";
+            cout << "Error! Could not receive!";
             return -4;
         }else if (bytes_received == 0){
-            cout << "Client has closed its half side of the connection";
+            cout << "Client has closed its side of the connection " << endl;
             break;
         }
+        cout << "Client message: " << message << endl;
     }
-    cout << "Shutting down socket";
-    shutdown(client_socket, SHUT_RDWR);
+    close(client_socket);
 }
-
