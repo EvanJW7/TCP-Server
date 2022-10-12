@@ -19,7 +19,7 @@ int main(int argc, char **argv){
     //take the second element of arg vector. First element is name of executable
     int port = atoi(argv[1]);
 
-    //1. Socket. This will be an tcp streaming socket
+    //1. Socket. This will be a tcp streaming socket
     int sock = socket(AF_INET, SOCK_STREAM, 0);
 
     //2. Bind
